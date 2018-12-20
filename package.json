@@ -11,5 +11,9 @@
     "url": "git@personal-github.com:iDavidLin/tinypack.git"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "webpack": "^4.28.0",
+    "webpack-cli": "^3.1.2"
+  }
 }
