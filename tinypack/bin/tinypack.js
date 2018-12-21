@@ -7,9 +7,26 @@ const path = require('path');
 let modules = [];
 
 let script = fs.readFileSync(entry, 'utf8');
+
+function styleLoader(source) {
+  // source: css content.
+  // json.stringify will have /r/n or /n
+  return `
+  let style = document.createElement('style');
+  style.innerText=${JSON.stringify(source).replace(/\\r\\n|\\n|\\r/g, '')}
+  document.head.appendChild(style)
+  `
+}
+
 script = script.replace(/require\(["'](.+?)["']\)/g, function() {
   let name = path.join('./src', arguments[1]);
   let content = fs.readFileSync(name, 'utf8');
+
+  if (/\.css$/.test(name)) {
+    content = styleLoader(content)
+    console.log('content', content);
+  }
+
   modules.push({
     name,
     content
@@ -112,7 +129,7 @@ const template = `
      })
      <%for(let i=0; i< modules.length; i++) {%>,
      <%const module = modules[i]%>
-     "<%-module.name%>": 
+     "<%-module.name%>":
      (function(module, exports, __webpack_require__) {
        eval(\`<%-module.content%>\`);
      })
